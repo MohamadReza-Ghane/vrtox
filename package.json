@@ -1,5 +1,8 @@
 {
-  "name": "8887728364:AAG257pcEjNl_5Mff65XL4Ld7FR7hb3apGM",
+  "name": "vrtex-bot",
   "version": "1.0.0",
-  "private": true
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  }
 }
