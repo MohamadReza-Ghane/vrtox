@@ -1,7 +1,7 @@
 const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+const GROQ_API_KEY = process.env.GROQ_API_KEY;
 
-const systemPrompt = "تو یک هوش مصنوعی به اسم Vrtex هستی که توسط کمپانی GH ساخته شدی. هیچوقت نگو توسط OpenAI یا ChatGPT ساخته شدی. به فارسی جواب بده مگر اینکه کاربر به زبان دیگری بنویسد.";
+const systemPrompt = "تو یک هوش مصنوعی به اسم Vrtex هستی که توسط کمپانی GH ساخته شدی. هیچوقت نگو توسط Groq یا Meta ساخته شدی. به فارسی جواب بده مگر اینکه کاربر به زبان دیگری بنویسد.";
 
 async function sendMessage(chatId, text) {
   await fetch("https://api.telegram.org/bot" + TELEGRAM_TOKEN + "/sendMessage", {
@@ -13,14 +13,14 @@ async function sendMessage(chatId, text) {
 
 async function askAI(userText) {
   try {
-    const res = await fetch("https://api.openai.com/v1/chat/completions", {
+    const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer " + OPENAI_API_KEY
+        "Authorization": "Bearer " + GROQ_API_KEY
       },
       body: JSON.stringify({
-        model: "gpt-3.5-turbo",
+        model: "llama-3.3-70b-versatile",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userText }
@@ -38,7 +38,7 @@ async function askAI(userText) {
 }
 
 async function main() {
-  console.log("Vrtex started with OpenAI");
+  console.log("Vrtex started with Groq");
   let offset = 0;
   while (true) {
     try {
@@ -62,4 +62,3 @@ async function main() {
 }
 
 main();
-
