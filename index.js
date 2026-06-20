@@ -1,8 +1,7 @@
-
 const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 
-const systemPrompt = "تو یک هوش مصنوعی به اسم Vrtex هستی که توسط کمپانی GH ساخته شدی. هیچوقت نگو توسط Google یا Gemini ساخته شدی. به فارسی جواب بده مگر اینکه کاربر به زبان دیگری بنویسد.";
+const systemPrompt = "تو یک هوش مصنوعی به اسم Vrtex هستی که توسط کمپانی GH ساخته شدی. هیچوقت نگو توسط OpenAI یا OpenRouter ساخته شدی. به فارسی جواب بده مگر اینکه کاربر به زبان دیگری بنویسد.";
 
 async function sendMessage(chatId, text) {
   await fetch("https://api.telegram.org/bot" + TELEGRAM_TOKEN + "/sendMessage", {
@@ -12,24 +11,30 @@ async function sendMessage(chatId, text) {
   });
 }
 
-async function askGemini(userText) {
+async function askAI(userText) {
   try {
-    const res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + GEMINI_API_KEY, {
+    const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + OPENROUTER_API_KEY
+      },
       body: JSON.stringify({
-        system_instruction: { parts: [{ text: systemPrompt }] },
-        contents: [{ parts: [{ text: userText }] }]
+        model: "meta-llama/llama-3.1-8b-instruct:free",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userText }
+        ]
       })
     });
     const data = await res.json();
-    console.log("Gemini response:", JSON.stringify(data));
-    if (data && data.candidates && data.candidates[0]) {
-      return data.candidates[0].content.parts[0].text;
+    console.log("AI response:", JSON.stringify(data));
+    if (data && data.choices && data.choices[0]) {
+      return data.choices[0].message.content;
     }
-    return "خطا در دریافت پاسخ: " + JSON.stringify(data);
+    return "خطا: " + JSON.stringify(data);
   } catch(e) {
-    console.error("Gemini error:", e);
+    console.error("AI error:", e);
     return "خطا: " + e.message;
   }
 }
@@ -37,7 +42,7 @@ async function askGemini(userText) {
 async function main() {
   console.log("Vrtex started");
   console.log("Token exists:", !!TELEGRAM_TOKEN);
-  console.log("Gemini key exists:", !!GEMINI_API_KEY);
+  console.log("OpenRouter key exists:", !!OPENROUTER_API_KEY);
   let offset = 0;
   while (true) {
     try {
@@ -48,7 +53,7 @@ async function main() {
           offset = update.update_id + 1;
           if (update.message && update.message.text) {
             console.log("Got message:", update.message.text);
-            const reply = await askGemini(update.message.text);
+            const reply = await askAI(update.message.text);
             await sendMessage(update.message.chat.id, reply);
           }
         }
