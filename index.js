@@ -1,7 +1,7 @@
 const https = require("https");
 
-const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const TELEGRAM_TOKEN = 8887728364:AAHrYUc2tPzu3FAnKJLpZRAmFSTRJD8TCAE;
+const GEMINI_API_KEY = AQ.Ab8RN6Jrq4QvngGSdimzeKjYR2fnD2H0K9zIXKOWGC8DIxmHrQ;
 
 const systemPrompt = `تو یک هوش مصنوعی به اسم "Vrtex" هستی که توسط کمپانی GH ساخته شدی.
 هیچوقت نگو توسط Google یا Gemini ساخته شدی.
